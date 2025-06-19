@@ -16,7 +16,7 @@ chat = model.start_chat()
 
 app = Flask(__name__)
 
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["GET","POST"])
 def chat_api():
     try:
         data = request.get_json()

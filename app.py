@@ -2,23 +2,38 @@ from flask import Flask, request, jsonify
 import google.generativeai as genai
 import os
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Load API key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+# Check if the key is actually present
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY is not set in environment variables!")
+
+# Configure the model
+genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-2.0-flash")
 chat = model.start_chat()
 
 app = Flask(__name__)
 
-@app.route("/chat", methods=["GET", "POST"])
+@app.route("/chat", methods=["POST"])
 def chat_api():
-    if request.method == "GET":
-        return jsonify({"message": "Send a POST request with JSON: { 'message': 'your text' }"}), 400
+    try:
+        data = request.get_json()
+        if not data or "message" not in data:
+            return jsonify({"error": "Missing 'message' in request"}), 400
 
-    if user_input.strip().lower() in ["what is your name?", "who are you?", "what your name"]:
-        return jsonify({"reply": "I am TruthLens, your AI assistant."})
+        user_input = data["message"]
 
-    response = chat.send_message(user_input)
-    return jsonify({"reply": response.text})
+        if user_input.strip().lower() in ["what is your name?", "who are you?", "what your name"]:
+            return jsonify({"reply": "I am TruthLens, your AI assistant."})
+
+        response = chat.send_message(user_input)
+        return jsonify({"reply": response.text})
+    
+    except Exception as e:
+        print(f"Internal Server Error: {e}")
+        return jsonify({"error": f"Internal Server Error: {e}"}), 500
 
 @app.route("/", methods=["GET"])
 def home():

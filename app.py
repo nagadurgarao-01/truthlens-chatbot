@@ -25,7 +25,7 @@ def chat_api():
 
         user_input = data["message"]
 
-        if user_input.strip().lower() in ["what is your name?", "who are you?", "what your name","What is your name",]:
+        if user_input.strip().lower() in ["what is your name?", "who are you?", "what your name","What is your name","name","Tell your name","tell about your slef"]:
             return jsonify({"reply": "I am TruthLens, your AI assistant."})
 
         response = chat.send_message(user_input)

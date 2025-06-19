@@ -9,11 +9,10 @@ chat = model.start_chat()
 
 app = Flask(__name__)
 
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["GET", "POST"])
 def chat_api():
-    user_input = request.json.get("message")
-    if not user_input:
-        return jsonify({"error": "Missing 'message' in request"}), 400
+    if request.method == "GET":
+        return jsonify({"message": "Send a POST request with JSON: { 'message': 'your text' }"}), 200
 
     if user_input.strip().lower() in ["what is your name?", "who are you?", "what your name"]:
         return jsonify({"reply": "I am TruthLens, your AI assistant."})
